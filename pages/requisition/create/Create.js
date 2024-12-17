@@ -1,4 +1,4 @@
-import TestData from '../test-data/TestData.json';
+import TestData from '../../../test-data/TestData.json';
 import LPrCreate from '../../../constants/requisitions/LPrCreate';
 
 class Create {
@@ -462,161 +462,143 @@ class Create {
         }
     }
 
-    public void addLineRequisitionItems() {
+    async addLineRequisitionItems() {
         try {
-            Locator addItemButton = null;
-            Locator addLineItemButton = page.locator(ADD_LINE_ITEM_BUTTON);
-            this.config.waitForLocator(addLineItemButton);
-            addLineItemButton.click();
+            let addItemButton = null;
+            let addLineItemButton = await this.page.locator(LPrCreate.ADD_LINE_ITEM_BUTTON);
+            await this.config.waitForLocator(addLineItemButton);
+            await addLineItemButton.click();
 
-            Locator itemsDropdown = page.locator(ITEMS);
-            this.config.waitForLocator(itemsDropdown);
-            itemsDropdown.click();
+            let itemsDropdown = await this.page.locator(LPrCreate.ITEMS);
+            await this.config.waitForLocator(itemsDropdown);
+            await itemsDropdown.click();
 
-            if (this.purchaseType.equals("Catalog")) {
-                List<String> itemList = page.locator(ITEMS_LIST).allTextContents();
-                for (int i = 1; i <= itemList.size(); i++) {
-                    String itemName = itemList.get(i);
-                    itemName.split(" - ");
+            if (this.purchaseType.toLowerCase().equals("catalog")) {
+                let itemList = await this.page.$$(LPrCreate.ITEMS_LIST).allTextContents();
+                for (let i = 1; i < itemList.length; i++) {
+                    let itemName = itemList[i].split(' - ');
 
-                    if (i > 1) {
-                        this.config.waitForLocator(addItemButton);
-                        addLineItemButton.click();
-                        this.config.waitForLocator(itemsDropdown);
-                        itemsDropdown.click();
+                    if (itemList.length > 1) {
+                        await this.config.waitForLocator(addItemButton);
+                        await addLineItemButton.click();
+                        await this.config.waitForLocator(itemsDropdown);
+                        await itemsDropdown.click();
                     }
 
-                    Locator itemSearchBox = page.locator(ITEM_SEARCH);
-                    this.config.waitForLocator(itemSearchBox);
-                    itemSearchBox.fill(itemName);
+                    let itemSearchBox = await this.page.locator(LPrCreate.ITEM_SEARCH);
+                    await this.config.waitForLocator(itemSearchBox);
+                    await itemSearchBox.fill(itemName);
 
-                    Locator itemOption = page.locator(getItem(itemName));
+                    let itemOption = await this.page.locator(LPrCreate.getItem(itemName));
                     this.config.waitForLocator(itemOption);
-                    itemOption.first().click();
+                    await itemOption.first().click();
 
-                    Locator quantityField = page.locator(QUANTITY);
-                    this.config.waitForLocator(quantityField);
-                    quantityField.fill(String.valueOf(i));
+                    let quantityField = await this.page.locator(LPrCreate.QUANTITY);
+                    await this.config.waitForLocator(quantityField);
+                    await quantityField.fill(String.valueOf(i));
 
-                    addItemButton = page.locator(ADD_ITEM_BUTTON);
-                    this.config.waitForLocator(addItemButton);
-                    addItemButton.click();
+                    addItemButton = await this.page.locator(LPrCreate.ADD_ITEM_BUTTON);
+                    await this.config.waitForLocator(addItemButton);
+                    await addItemButton.click();
                 }
-            } else if (this.purchaseType.equals("NonCatalog")) {
-                String[] itemNames = properties.getProperty("items").split(",");
-                String[] quantities = properties.getProperty("quantityList").split(",");
+            } else if (this.purchaseType.toLowerCase().equals("noncatalog")) {
+                let itemNames = TestData.orderDetails.items.split(',');
+                let quantities = TestData.orderDetails.quantityList.split(",");
 
-                for (int i = 0; i < itemNames.length; i++) {
-                    this.config.waitForLocator(addItemButton);
-                    addLineItemButton.click();
+                for (let i = 1; i < itemNames.length; i++) {
+                    await this.config.waitForLocator(addItemButton);
+                    await addLineItemButton.click();
 
-                    this.config.waitForLocator(itemsDropdown);
-                    itemsDropdown.click();
+                    await this.config.waitForLocator(itemsDropdown);
+                    await itemsDropdown.click();
 
-                    Locator itemSearchBox = page.locator(ITEM_SEARCH);
-                    this.config.waitForLocator(itemSearchBox);
-                    itemSearchBox.fill(itemNames[i]);
+                    let itemSearchBox = await this.page.locator(LPrCreate.ITEM_SEARCH);
+                    await this.config.waitForLocator(itemSearchBox);
+                    await itemSearchBox.fill(itemNames[i]);
 
-                    Locator itemOption = page.locator(getItem(itemNames[i]));
-                    this.config.waitForLocator(itemOption);
-                    itemOption.first().click();
+                    let itemOption = await this.page.locator(LPrCreate.getItem(itemNames[i]));
+                    await this.config.waitForLocator(itemOption);
+                    await itemOption.first().click();
 
-                    Locator quantityField = page.locator(QUANTITY);
-                    this.config.waitForLocator(quantityField);
-                    quantityField.fill(quantities[i]);
+                    let quantityField = await this.page.locator(LPrCreate.QUANTITY);
+                    await this.config.waitForLocator(quantityField);
+                    await quantityField.fill(quantities[i]);
 
-                    this.config.waitForLocator(addItemButton);
-                    addItemButton.click();
+                    await this.config.waitForLocator(addItemButton);
+                    await addItemButton.click();
                 }
-            } else if (this.purchaseType.equalsIgnoreCase("MH")) {
-                String mhItemName = properties.getProperty("mhItem");
-
-                Locator itemSearchBox = page.locator(ITEM_SEARCH);
-                this.config.waitForLocator(itemSearchBox);
-                itemSearchBox.fill(mhItemName);
-
-                Locator itemOption = page.locator(getItem(mhItemName));
-                this.config.waitForLocator(itemOption);
-                itemOption.first().click();
-
-                Locator quantityField = page.locator(QUANTITY);
-                this.config.waitForLocator(quantityField);
-                quantityField.fill("20");
-
-                this.config.waitForLocator(addItemButton);
-                addItemButton.click();
             }
-        } catch (Exception error) {
-            System.out.println("Error encountered: " + error.getMessage());
-        }
-
-    }
-
-    public void notes() {
-        try {
-            String notesText = properties.getProperty("requisitionNotes");
-            Locator notesField = page.locator(NOTES);
-            this.config.waitForLocator(notesField);
-            notesField.fill(notesText);
-        } catch (Exception error) {
-            System.out.println("Error encountered: " + error.getMessage());
+        } catch (error) {
+            console.log("Error encountered: " + error);
         }
     }
 
-    public void attachments(){
+    async notes() {
         try {
+            let notes = TestData.documentsAndNotes.requisitionNotes;
+            let notesField = await this.page.locator(LPrCreate.NOTES);
+            await this.config.waitForLocator(notesField);
+            await notesField.fill(notesText);
+        } catch (error) {
+            console.log("Error encountered: " + error);
+        }
+    }
+
+    async attachments(){
+        try {
+            let internalFile = TestData.browserAndExecutionSettings.internalFilePath;
+            let externalFile = TestData.browserAndExecutionSettings.externalFilePath;
 //TODO Internal Attachment
-            Locator attachmentsButton = page.locator(ATTACHMENTS);
-            this.config.waitForLocator(attachmentsButton);
-            attachmentsButton.click();
+            let attachmentsButton = await this.page.locator(LPrCreate.ATTACHMENTS);
+            await this.config.waitForLocator(attachmentsButton);
+            await attachmentsButton.click();
 
-            Locator internalFileUpload = page.locator(FILE_UPLOAD);
-            this.config.waitForLocator(internalFileUpload);
-            internalFileUpload.setInputFiles(Paths.get(properties.getProperty("internalFilePath")));
+            let internalFileUpload = await this.page.locator(LPrCreate.FILE_UPLOAD);
+            await this.config.waitForLocator(internalFileUpload);
+            await internalFileUpload.setInputFiles(Paths.get(internalFile));
 
-            Locator attachInternalFileButton = page.locator(ATTACH_FILE_BUTTON);
-            this.config.waitForLocator(attachInternalFileButton);
+            let attachInternalFileButton = await this.page.locator(LPrCreate.ATTACH_FILE_BUTTON);
+            await this.config.waitForLocator(attachInternalFileButton);
             attachInternalFileButton.click();
 
 //TODO External Attachment
-            Locator externalAttachmentsButton = page.locator(ATTACHMENTS);
-            this.config.waitForLocator(externalAttachmentsButton);
-            externalAttachmentsButton.click();
+            let externalAttachmentsButton = await this.page.locator(LPrCreate.ATTACHMENTS);
+            await this.config.waitForLocator(externalAttachmentsButton);
+            await externalAttachmentsButton.click();
 
-            Locator externalFileUpload = page.locator(FILE_UPLOAD);
-            this.config.waitForLocator(externalFileUpload);
-            externalFileUpload.setInputFiles(Paths.get(properties.getProperty("externalFilePath")));
+            let externalFileUpload = await this.page.locator(LPrCreate.FILE_UPLOAD);
+            await this.config.waitForLocator(externalFileUpload);
+            await externalFileUpload.setInputFiles(Paths.get(externalFile));
 
-            Locator externalRadioButton = page.locator(EXTERNAL_RADIO_BUTTON);
-            this.config.waitForLocator(externalRadioButton);
-            externalRadioButton.click();
+            let externalRadioButton = await this.page.locator(LPrCreate.EXTERNAL_RADIO_BUTTON);
+            await this.config.waitForLocator(externalRadioButton);
+            await externalRadioButton.click();
 
-            Locator attachExternalFileButton = page.locator(ATTACH_FILE_BUTTON);
-            this.config.waitForLocator(attachExternalFileButton);
-            attachExternalFileButton.click();
+            let attachExternalFileButton = await this.page.locator(LPrCreate.ATTACH_FILE_BUTTON);
+            await this.config.waitForLocator(attachExternalFileButton);
+            await attachExternalFileButton.click();
 
-            Locator continueButton = page.locator(CONTINUE_BUTTON);
-            this.config.waitForLocator(continueButton);
-            continueButton.click();
-
-        } catch (Exception error) {
-            System.out.println("Error encountered: " + error.getMessage());
+            let continueButton = await this.page.locator(LPrCreate.CONTINUE_BUTTON);
+            await this.config.waitForLocator(continueButton);
+            await continueButton.click();
+        } catch (error) {
+            console.error("Error encountered: " + error);
         }
     }
 
-    public void prCreate() {
+    async prCreate() {
         try {
-            Locator createDraftButtonLocator = page.locator(CREATE_DRAFT_BUTTON);
-            this.config.waitForLocator(createDraftButtonLocator);
-            createDraftButtonLocator.click();
+            let createDraftButtonLocator = await this.page.locator(LPrCreate.CREATE_DRAFT_BUTTON);
+            await this.config.waitForLocator(createDraftButtonLocator);
+            await createDraftButtonLocator.click();
 
-            Locator yesButtonLocator = page.locator(YES);
-            this.config.waitForLocator(yesButtonLocator);
-            yesButtonLocator.click();
+            let yesButtonLocator = await this.page.locator(LPrCreate.YES);
+            await this.config.waitForLocator(yesButtonLocator);
+            await yesButtonLocator.click();
 
-            iLogout.performLogout();
-        } catch (Exception error) {
-            System.out.println("Error encountered: " + error.getMessage());
+            await iLogout.performLogout();
+        } catch (error) {
+            console.log("Error encountered: " + error);
         }
     }
 }
