@@ -36,3 +36,5 @@ class Approve {
         }
     }
 }
+
+export default Approve;

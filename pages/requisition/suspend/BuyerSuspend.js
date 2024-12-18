@@ -43,3 +43,5 @@ class BuyerSuspend {
         }
     }
 }
+
+export default BuyerSuspend;

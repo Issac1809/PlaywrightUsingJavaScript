@@ -68,3 +68,5 @@ class PurchaseRequisitionTypeHandler {
         }
     }
 }
+
+export default PurchaseRequisitionTypeHandler;

@@ -52,3 +52,5 @@ class Assign {
         }
     }
 }
+
+export default Assign;

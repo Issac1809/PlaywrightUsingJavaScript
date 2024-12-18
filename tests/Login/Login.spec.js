@@ -1,18 +1,13 @@
-import {test, expect} from '@playwright/test';
-import LoginPage from '../../pages/login/LoginPage';
-import Config from '../../utils/Config';
+import {test, expect} from '../base/BaseTest.spec';
 
-test('Successful Login', async ({page}) => {
+test('Successful Login', async ({loginPage}) => {
         try {
-            const config = new Config();
-            const loginPage = new LoginPage(config, page);
-
             const loginTitle = 'Requisitions - GePS-CPS';
-            
+
             await loginPage.login();
-            await config.screenshotFunction(loginTitle, page);
+            await loginPage.config.screenshotFunction(loginTitle, loginPage.page);
     
-            await expect(page).toHaveTitle(loginTitle);
+            await expect(loginPage.page).toHaveTitle(loginTitle);
         } catch (error) {
             console.error("Error in validating login page: " + error);
         }

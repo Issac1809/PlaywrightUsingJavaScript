@@ -43,3 +43,5 @@ class Reject {
         }
     }
 }
+
+export default Reject;

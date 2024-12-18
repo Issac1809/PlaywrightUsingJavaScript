@@ -36,3 +36,5 @@ class SendForApproval {
         }
     }
 }
+
+export default SendForApproval;

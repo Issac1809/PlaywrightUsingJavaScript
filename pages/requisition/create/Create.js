@@ -4,10 +4,11 @@ import LPrCreate from '../../../constants/requisitions/LPrCreate';
 class Create {
 
 //TODO Constructor
-    constructor(login, config, page) {
+    constructor(login, config, page, logout) {
         this.login = login;
         this.config = config;
         this.page = page;
+        this.logout = logout;
         this.purchaseType = TestData.orderDetails.purchaseType;
     }
 
@@ -602,3 +603,5 @@ class Create {
         }
     }
 }
+
+export default Create;

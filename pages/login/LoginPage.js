@@ -4,7 +4,7 @@ import TestData from '../../test-data/TestData.json';
 class LoginPage {
 
 //TODO Constructor    
-    constructor(config, page){
+    constructor(page, config){
         this.config = config;
         this.page = page;
     }
