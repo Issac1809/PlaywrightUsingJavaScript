@@ -1,16 +1,12 @@
-import {test, expect} from '@playwright/test';
-import Config from '../../../utils/Config';
-import LoginPage from '../../../pages/login/LoginPage';
-import Create from '../../../pages/requisition/create/Create';
-import PurchaseRequisitionTypeHandler from '../../../pages/requisitions/PurchaseRequisitionTypeHandler';
+import {test, expect} from "../../base/BaseTest.spec";
 
-test('Requisition Create Test', async({page}) => {
+test('Requisition Create Test', async({prTypeHandler}) => {
      try {
-      const config = new Config();
-      const login = new LoginPage(config, page);
-      
 
-      prType.processRequisitionType();
+      const {status, body} = await prTypeHandler.processRequisitionType();
+      
+      expect(status).toBe(200);
+//      await expect(body.success).toBe(true);
 
      } catch (error) {
         console.error("What is the error: " + error);

@@ -20,7 +20,16 @@ class LoginPage {
             await passwordLocator.fill(TestData.browserAndExecutionSettings.loginPassword);
     
             let loginButtonLocator = await this.page.locator(LLogin.LOGIN_BUTTON);
-            await loginButtonLocator.click();
+
+            const [response] = await Promise.all([
+                this.page.waitForResponse((response) =>
+                response.url().includes('/api/users/current') && response.status()),
+                loginButtonLocator.click()
+        ]);
+
+        const status = await response.status();
+        const body = await response.json();
+        return {status, body};
         } catch (error) {
             console.error("What is the Error: " + error);
         }

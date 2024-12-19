@@ -58,10 +58,6 @@ class LPrCreate {
     constructor() {
     }
 
-    constructor(properties) {
-        this.properties = properties;
-    }
-
     static getPrType(type) {
         return "//a[@href='/Procurement/Requisitions/POC_" + type + "_Create']";
     }

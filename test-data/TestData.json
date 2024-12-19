@@ -2,7 +2,7 @@
     "mailIds": {
         "adminEmail": "admin@cormsquare.com",
         "buyerEmail": "buyer@cormsquare.com",
-        "buyerManagerEmail": "buyermanager@cormsquare.com",
+        "buyerManagerEmail": "Grace.Tan@yokogawa.com",
         "cfoEmail": "cfo@cormsquare.com",
         "requesterEmail": "Alan.Mao@yokogawa.com",
         "financeCheckerEmail": "financechecker@cormsquare.com",
@@ -10,7 +10,7 @@
         "prApproverGroupBEmail": "admin@cormsquare.com",
         "prApproverGroupCEmail": "departmentmanager@cormsquare.com",
         "prApproverGroupDEmail": "businessunitmanager@cormsquare.com",
-        "projectManagerEmail": "projectmanager@cormsquare.com",
+        "projectManagerEmail": "William.Yang@yokogawa.com",
         "presidentDirectorCorporateEmail": "hazel@sharklasers.com",
         "vendorEmail": "ind2@cormsquare.com"
     },
@@ -18,18 +18,18 @@
     "orderDetails": {
       "orderTitle": "POC-Automation",
       "purchaseType": "Catalog",
-      "vendorName": "11 X 17 INC",
-      "items": "Power Cable 3C x 2.5 Sqmm, TERMINAL MARKER 8/5, LED Type Indication Lamps 24V AMBER",
+      "vendorName": "HOBRÉ INSTRUMENTS B.V.",
+      "items": "24 V DC Power Supply-5 Amps, TERMINAL MARKER 8/5, LED Type Indication Lamps 24V AMBER",
       "mhItem": "Engineering Services",
       "poReferenceId": "240024PO00289",
-      "projectCode": "E216671W00",
+      "projectCode": "E033132400",
       "quantityList": "150,200,20,80,90,35,40,20,10,5",
       "partNumber": "PN - 1",
       "leadTimeDays": 10,
       "packageType": "Drum",
       "makeDescription": "Make - 1",
       "modelDescription": "Model - 1",
-      "wbsCode": "JANPJTH"
+      "wbsCode": "J11PNLH"
     },
 
     "billingAndPricingDetails": {
@@ -42,7 +42,7 @@
       "gstPercentage": 8,
       "priceValidity": "3 Months",
       "targetPrice": 4500,
-      "rateContract": "Rate Contract - 11 X 17",
+      "rateContract": "RC-00001 - Hobre Rate Contract",
       "billingType": "TimeSheet",
       "liquidatedDamages": "Special"
     },
@@ -52,7 +52,7 @@
       "destinationCountry": "India",
       "sourceCountry": "India",
       "shippingMode": "Courier",
-      "shippingAddress": "C1W00026 - Yokogawa Corporation of America - 1953",
+      "shippingAddress": "C2400000 - Yokogawa Engineering Asia Pte. Ltd - 9001",
       "incoterm": "EXW - Ex Works",
       "incotermLocation": "Bengaluru",
       "oiAndTpCurrency": "SGD",

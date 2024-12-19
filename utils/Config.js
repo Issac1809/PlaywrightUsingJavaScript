@@ -26,9 +26,10 @@ class Config{
         }
     }
 
-    async waitForLocator(locator){
+    async waitForLocator(page){
         try {
-            await locator.waitForLoadState('networkidle', 'domcontentloaded');
+            await page.waitForLoadState('domcontentloaded');
+            await page.waitForLoadState('networkidle'); 
         } catch (error) {
             console.error("What is the Error: " + error);
         }
