@@ -118,7 +118,7 @@ class Create {
             const [response] = await Promise.all([
                 this.page.waitForResponse((response) =>
                 response.url().includes('/api/workBreakdownStructures')),
-                await wbsLocator.click()
+                wbsLocator.click()
             ]);
 
             const responseBody = await response.json();
@@ -130,10 +130,9 @@ class Create {
                     await this.config.waitForLocator(this.page);
                     await wbsSearchLocator.fill(wbsCodeValue);
 
-                    let wbsSelectLocator = LPrCreate.getWBSForCandNC(wbsCodeValue);
-                    let finalWbsLocator = await this.page.locator(wbsSelectLocator);
+                    let wbsSelectLocator = await this.page.locator('.select2-results__option').first();
                     await this.config.waitForLocator(this.page);
-                    await finalWbsLocator.click();
+                    await wbsSelectLocator.click();
                     break;
                 }
             }
@@ -354,9 +353,9 @@ class Create {
 
     async rohsCompliance(){
         try {
-            let compliance = TestData.miscellaneous.rohsCompliance.toLowerCase().trim();
+            let compliance = TestData.miscellaneousItemDetails.rohsCompliance;
 
-            if (compliance.equals("no")) {
+            if (compliance === 'No') {
                 let rohsComplianceLocator = await this.page.locator(LPrCreate.ROHS_COMPLIANCE);
                 this.config.waitForLocator(this.page);
                 await rohsComplianceLocator.click();
@@ -374,7 +373,7 @@ class Create {
                 await this.config.waitForLocator(this.page);
                 await oiAndTpCurrencyLocator.click();
 
-                let currency = TestData.locationAndShippingDetails.oiAndTpCurrency.toLowerCase().trim();
+                let currency = TestData.locationAndShippingDetails.oiAndTpCurrency;
 
                 let oiAndTpCurrencySearchLocator = await this.page.locator(LPrCreate.OI_AND_TP_CURRENCY_SEARCH);
                 await this.config.waitForLocator(this.page);
@@ -393,11 +392,10 @@ class Create {
     async orderIntake(){
         try {
             let orderIntake = TestData.billingAndPricingDetails.orderIntake;
-            let purchaseType = this.purchaseType;
 
-            let orderIntakeLocator = '';
+            let orderIntakeLocator;
 
-            if(purchaseType === 'Catalog'){
+            if(this.purchaseType === 'Catalog'){
                 orderIntakeLocator = await this.page.locator(LPrCreate.CATALOG_ORDER_INTAKE);
             } else {
                 orderIntakeLocator = await this.page.locator(LPrCreate.NON_CATALOG_ORDER_INTAKE);
@@ -411,11 +409,11 @@ class Create {
 
     async targetPrice(){
         try {
-            if (this.purchaseType.toLowerCase().equals("noncatalog")) {
+            if (this.purchaseType === 'NonCatalog') {
                 let targetPrice = TestData.billingAndPricingDetails.targetPrice;
                 let targetPriceLocator = await this.page.locator(LPrCreate.TARGET_PRICE);
                 await this.config.waitForLocator(this.page);
-                await targetPriceLocator.fill(targetPrice);
+                await targetPriceLocator.fill(targetPrice.toString());
             }
         } catch (error) {
             console.log("Error encountered: " + error);
@@ -424,7 +422,7 @@ class Create {
 
     async warrantyRequirements(){
         try {
-            if (this.purchaseType.toLowerCase().equals("noncatalog")) {
+            if (this.purchaseType === 'NonCatalog') {
                 let warrantyRequirementsLocator = await this.page.locator(LPrCreate.WARRANTY_REQUIREMENTS);
                 await this.config.waitForLocator(this.page);
                 await warrantyRequirementsLocator.click();
@@ -451,13 +449,13 @@ class Create {
             await this.config.waitForLocator(this.page);
             await priceValidityLocator.click();
 
-            let warrantyRequirement = TestData.billingAndPricingDetails.priceValidity;
+            let priceValidity = TestData.billingAndPricingDetails.priceValidity;
 
             let priceValiditySearchLocator = await this.page.locator(LPrCreate.PRICE_VALIDITY_SEARCH);
             await this.config.waitForLocator(this.page);
-            await priceValiditySearchLocator.fill(warrantyRequirement);
+            await priceValiditySearchLocator.fill(priceValidity);
 
-            let priceValiditySelector = LPrCreate.getPriceValidity(warrantyRequirement);
+            let priceValiditySelector = LPrCreate.getPriceValidity(priceValidity);
             let priceValidityOptionLocator = await this.page.locator(priceValiditySelector);
             await this.config.waitForLocator(this.page);
             await priceValidityOptionLocator.click();
@@ -470,12 +468,12 @@ class Create {
         try {
             let isInspectionRequired = TestData.miscellaneousItemDetails.inspectionRequired;
             let purchaseType = this.purchaseType;
-            let inspectionRequiredLocator = '';
+            let inspectionRequiredLocator;
             if (isInspectionRequired === 'true'){
                 if (purchaseType === 'Catalog') {
                     inspectionRequiredLocator = await this.page.locator(LPrCreate.CATALOG_INSPECTION_REQUIRED);
                 } else if(purchaseType === 'NonCatalog') {
-                    inspectionRequiredLocator = await this.page.locator(LPrCreate.CATALOG_INSPECTION_REQUIRED);
+                    inspectionRequiredLocator = await this.page.locator(LPrCreate.NON_CATALOG_INSPECTION_REQUIRED);
                 }
             }
                 await this.config.waitForLocator(this.page);
@@ -487,9 +485,9 @@ class Create {
 
     async liquidatedDamages(){
         try {
-            let liquidatedDamages = TestData.billingAndPricingDetailsliquidatedDamages.toLowerCase().trim();
+            let liquidatedDamages = TestData.billingAndPricingDetails.liquidatedDamages;
 
-            if (liquidatedDamages.equals("special")) {
+            if (liquidatedDamages === 'Special') {
                 let liquidatedDamagesSelector = await this.page.locator(LPrCreate.LIQUIDATED_DAMAGES_SELECT);
                 await this.config.waitForLocator(this.page);
                 await liquidatedDamagesSelector.click();
@@ -507,8 +505,6 @@ class Create {
         try {
             const addLineItemButton = await this.page.locator(LPrCreate.ADD_LINE_ITEM_BUTTON);
             await addLineItemButton.click();
-            
-            // const nonCatalogItemsDropdown = await this.page.locator(LPrCreate.NON_CATALOG_ITEMS_CONTAINER);
             
             if (this.purchaseType === "Catalog") {
 
@@ -548,29 +544,38 @@ class Create {
                     }
                 }
             } else if (this.purchaseType === "NonCatalog") {
-                let itemNames = TestData.orderDetails.items.split(',');
-                let quantities = TestData.orderDetails.quantityList.split(",");
+                const nonCatalogItemsDropdown = await this.page.locator(LPrCreate.NON_CATALOG_ITEMS_CONTAINER);
 
-                for (let i = 0; i < itemNames.length(); i++) {
-                    await this.config.waitForLocator(this.page);
-                    await addLineItemButton.click();
+                let itemNames = TestData.orderDetails.items;
+                const items = itemNames.split(',').map(item => item.trim());
+                let quantities = TestData.orderDetails.quantityList;
+                const finalQuantities = quantities.split(',').map(quantity => quantity.trim());
 
+                for (let i = 0; i < items.length; i++) {
                     await this.config.waitForLocator(this.page);
-                    await itemsDropdown.click();
+                    await nonCatalogItemsDropdown.click();
 
                     let itemSearchBox = await this.page.locator(LPrCreate.ITEM_SEARCH);
                     await this.config.waitForLocator(this.page);
-                    await itemSearchBox.fill(itemNames[i]);
+                    await itemSearchBox.fill(items[i]);
 
-                    let itemOption = await this.page.locator(LPrCreate.getItem(itemNames[i]));
+                    let itemOption = await this.page.locator(LPrCreate.getItem(items[i]));
                     await this.config.waitForLocator(this.page);
                     await itemOption.first().click();
 
                     let quantityField = await this.page.locator(LPrCreate.QUANTITY);
                     await this.config.waitForLocator(this.page);
-                    await quantityField.fill(quantities[i]);
+                    await quantityField.fill(finalQuantities[i]);
 
+                    let addItemButton = await this.page.locator(LPrCreate.ADD_ITEM_BUTTON);
                     await this.config.waitForLocator(this.page);
+                    await addItemButton.click();
+
+                    if(i === items.length - 1){
+                        break;
+                    } else {
+                        await addLineItemButton.click();
+                    }
                 }
             }
         } catch (error) {

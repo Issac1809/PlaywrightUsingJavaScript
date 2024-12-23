@@ -17,9 +17,9 @@
 
     "orderDetails": {
       "orderTitle": "POC-Automation",
-      "purchaseType": "NonCatalog",
+      "purchaseType": "Catalog",
       "vendorName": "HOBRÉ INSTRUMENTS B.V.",
-      "itemCount": "24 V DC Power Supply-5 Amps, TERMINAL MARKER 8/5, LED Type Indication Lamps 24V AMBER",
+      "items": "24 V DC Power Supply-5 Amps, Battery Charger System, OPC Redundancy Broker",
       "mhItem": "Engineering Services",
       "poReferenceId": "240024PO00289",
       "projectCode": "E033132400",
@@ -55,7 +55,7 @@
       "shippingAddress": "C2400000 - Yokogawa Engineering Asia Pte. Ltd - 9001",
       "incoterm": "EXW - Ex Works",
       "incotermLocation": "Bengaluru",
-      "oiAndTpCurrency": "SGD",
+      "oiAndTpCurrency": "USD",
       "shipToYokogawa": "yes"
     },
 
