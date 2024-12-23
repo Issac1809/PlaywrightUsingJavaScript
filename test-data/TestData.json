@@ -12,14 +12,14 @@
         "prApproverGroupDEmail": "businessunitmanager@cormsquare.com",
         "projectManagerEmail": "William.Yang@yokogawa.com",
         "presidentDirectorCorporateEmail": "hazel@sharklasers.com",
-        "vendorEmail": "ind2@cormsquare.com"
+        "vendorEmail": "dj.ruijter@hobre.com"
     },
 
     "orderDetails": {
       "orderTitle": "POC-Automation",
-      "purchaseType": "Catalog",
+      "purchaseType": "NonCatalog",
       "vendorName": "HOBRÉ INSTRUMENTS B.V.",
-      "items": "24 V DC Power Supply-5 Amps, TERMINAL MARKER 8/5, LED Type Indication Lamps 24V AMBER",
+      "itemCount": "24 V DC Power Supply-5 Amps, TERMINAL MARKER 8/5, LED Type Indication Lamps 24V AMBER",
       "mhItem": "Engineering Services",
       "poReferenceId": "240024PO00289",
       "projectCode": "E033132400",
@@ -76,7 +76,7 @@
       "volumeCm3": 50,
       "warrantyRequirement": "2 Years",
       "hsCode": 1234,
-      "inspectionRequired": true,
+      "inspectionRequired": "true",
       "rohsCompliance": "No"
     },
 
@@ -85,7 +85,8 @@
       "runHeadless": false,
       "appUrl": "https://yea-test.cormsquare.com/Identity/Account/Login",
       "loginPassword": "Admin@123",
-      "internalFilePath": "C:\\My_Personal_Folder\\Downloads\\Internal.xlsx",
-      "externalFilePath": "C:\\My_Personal_Folder\\Downloads\\External.xlsx"
+      "internalFilePath": "C:\\My_Personal_Folder\\Playwright_Automation_JavaScript\\Files\\Internal.xlsx",
+      "externalFilePath": "C:\\My_Personal_Folder\\Playwright_Automation_JavaScript\\Files\\External.xlsx",
+      "fileType" : "Internal"
     }
 }

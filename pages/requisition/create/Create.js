@@ -50,7 +50,7 @@ class Create {
                     await this.config.waitForLocator(this.page);
                     await catalogTitleLocator.fill(title + "-" + this.purchaseType);
                     break;
-                case "non-catalog":
+                case "noncatalog":
                     let nonCatalogTitleLocator = await this.page.locator(LPrCreate.TITLE);
                     await this.config.waitForLocator(this.page);
                     await nonCatalogTitleLocator.fill(title + "-" + this.purchaseType);
@@ -68,7 +68,7 @@ class Create {
         try {
             let val = TestData.locationAndShippingDetails.shipToYokogawa;
             
-            if(val.toLowerCase().equals('yes')){
+            if(val.toLowerCase() ==='yes' ){
                 await this.page.locator(LPrCreate.SHIP_TO_YOKOGAWA).check();
             }
         } catch (error) {
@@ -82,21 +82,25 @@ class Create {
 
             let projectDropDownLocator = await this.page.locator(LPrCreate.PROJECT);
             await this.config.waitForLocator(this.page);
-            await projectDropDownLocator.click();
+            
+            const [response] = await Promise.all([
+                this.page.waitForResponse((response) =>
+                response.url().includes('/api/Projects')),
+                projectDropDownLocator.click()
+            ]);
 
-            let projectSearchFieldLocator = await this.page.locator(LPrCreate.PROJECT_SEARCH);
-            await this.config.waitForLocator(this.page);
-            await projectSearchFieldLocator.fill(projectCode);
+            const responseBody = await response.json();
 
-            const dropDownValues = await this.page.locator('.select2-results__options').allTextContents();
-            for(let dropDownValue of dropDownValues){
-                if(dropDownValue.includes(projectCode)){
+            for(let getProject of responseBody){
+                if(getProject.text === projectCode){
+                    let projectSearchFieldLocator = await this.page.locator(LPrCreate.PROJECT_SEARCH);
+                    await this.config.waitForLocator(this.page);
+                    await projectSearchFieldLocator.fill(projectCode);
+    
                     let projectSelectLocator = await this.page.locator('.select2-results__option').first();
                     await this.config.waitForLocator(this.page);
                     await projectSelectLocator.click();
                     break;
-                } else {
-                    console.log("No Projects Found");
                 }
             }
         } catch (error) {
@@ -106,19 +110,33 @@ class Create {
 
     async wbs() {
         try {
+            let wbsCodeValue = TestData.orderDetails.wbsCode;
+
             let wbsLocator = await this.page.locator(LPrCreate.WBS);
             await this.config.waitForLocator(this.page);
-            await wbsLocator.click();
 
-            let wbsCodeValue = TestData.orderDetails.wbsCode;
-            let wbsSearchLocator = await this.page.locator(LPrCreate.WBS_SEARCH);
-            await this.config.waitForLocator(this.page);
-            await wbsSearchLocator.fill(wbsCodeValue);
+            const [response] = await Promise.all([
+                this.page.waitForResponse((response) =>
+                response.url().includes('/api/workBreakdownStructures')),
+                await wbsLocator.click()
+            ]);
 
-            let wbsSelectLocator = LPrCreate.getWBSForCandNC(wbsCodeValue);
-            let finalWbsLocator = await this.page.locator(wbsSelectLocator);
-            await this.config.waitForLocator(this.page);
-            await finalWbsLocator.click();
+            const responseBody = await response.json();
+            const getWbs = await responseBody.map(wbs => wbs.text);
+
+            for(let wbs of getWbs){
+                if(wbs === wbsCodeValue){
+                    let wbsSearchLocator = await this.page.locator(LPrCreate.WBS_SEARCH);
+                    await this.config.waitForLocator(this.page);
+                    await wbsSearchLocator.fill(wbsCodeValue);
+
+                    let wbsSelectLocator = LPrCreate.getWBSForCandNC(wbsCodeValue);
+                    let finalWbsLocator = await this.page.locator(wbsSelectLocator);
+                    await this.config.waitForLocator(this.page);
+                    await finalWbsLocator.click();
+                    break;
+                }
+            }
         } catch (error) {
             console.log("Error encountered: " + error);
         }
@@ -130,13 +148,13 @@ class Create {
             await this.config.waitForLocator(this.page);
             await vendorLocator.click();
 
-            let vendorMailId = TestData.mailIds.vendorEmail;
-            let vendorSearchLocator = await page.locator(LPrCreate.VENDOR_SEARCH);
+            let vendorNameValue = TestData.orderDetails.vendorName;
+            let vendorSearchLocator = await this.page.locator(LPrCreate.VENDOR_SEARCH);
             await this.config.waitForLocator(this.page);
             await vendorSearchLocator.fill(vendorNameValue);
 
             let vendorOptionLocator = LPrCreate.getVendor(vendorNameValue);
-            let vendorOption = await page.locator(vendorOptionLocator);
+            let vendorOption = await this.page.locator(vendorOptionLocator);
             await this.config.waitForLocator(this.page);
             await vendorOption.click();
         } catch (error) {
@@ -148,7 +166,7 @@ class Create {
         try {
             let rateContractLocator = await this.page.locator(LPrCreate.RATE_CONTRACT);
             await this.config.waitForLocator(this.page);
-            await this.rateContractLocator.click();
+            await rateContractLocator.click();
 
             let rateContractValue = TestData.billingAndPricingDetails.rateContract;
             let rateContractSearchLocator = await this.page.locator(LPrCreate.RATE_CONTRACT_SEARCH);
@@ -156,7 +174,7 @@ class Create {
             await rateContractSearchLocator.fill(rateContractValue);
 
             let rateContractOptionLocator = LPrCreate.getRateContract(rateContractValue);
-            let rateContractOption = page.locator(rateContractOptionLocator);
+            let rateContractOption = this.page.locator(rateContractOptionLocator);
             await this.config.waitForLocator(this.page);
             await rateContractOption.click();
         } catch (error) {
@@ -167,14 +185,14 @@ class Create {
     async incoterm() {
         try {
             let incotermLocator = await this.page.locator(LPrCreate.INCOTERM);
-            await waitForLocator(this.page);
+            await this.config.waitForLocator(this.page);
             await incotermLocator.click();
 
             let incotermValue = TestData.locationAndShippingDetails.incoterm;
             let incotermSearchLocator = await this.page.locator(LPrCreate.INCOTERM_SEARCH);
             await incotermSearchLocator.fill(incotermValue);
 
-            let incotermOptionLocator = await LPrCreate.getIncoterm(incotermValue);
+            let incotermOptionLocator = LPrCreate.getIncoterm(incotermValue);
             let incotermOption = await this.page.locator(incotermOptionLocator);
             await this.config.waitForLocator(this.page);
             await incotermOption.click();
@@ -219,9 +237,8 @@ class Create {
 
     async shippingMode() {
         try {
-            let prTypeLocator = LPrCreate.getPrType(this.purchaseType);
 
-            let shippingMode = this.purchaseType.equals("catalog") ? LPrCreate.CATALOG_SHIPPING_MODE : LPrCreate.NON_CATALOG_MH_SHIPPING_MODE;
+            let shippingMode = this.purchaseType ==="Catalog" ? LPrCreate.CATALOG_SHIPPING_MODE : LPrCreate.NON_CATALOG_SHIPPING_MODE;
 
             let shippingModeLocator = await this.page.locator(shippingMode);
             await this.config.waitForLocator(this.page);
@@ -257,9 +274,14 @@ class Create {
 
     async expectedPOIssue() {
         try {
-            let expectedPoIssueField = await this.page.locator(LPrCreate.EXPECTED_PO_ISSUE);
+            let expectedPoIssue;
+            if(this.purchaseType === 'Catalog'){
+                expectedPoIssue = await this.page.locator(LPrCreate.EXPECTED_PO_ISSUE_CATALOG);
+            } else {
+                expectedPoIssue = await this.page.locator(LPrCreate.EXPECTED_PO_ISSUE_NON_CATALOG);
+            }
             await this.config.waitForLocator(this.page);
-            await expectedPoIssueField.click();
+            await expectedPoIssue.click();
 
             let todayOption = await this.page.locator(LPrCreate.TODAY);
             await this.config.waitForLocator(this.page);
@@ -271,9 +293,14 @@ class Create {
 
     async expectedDelivery() {
         try {
-            let expectedDeliveryField = await this.page.locator(LPrCreate.EXPECTED_DELIVERY);
+            let expectedDelivery;
+            if(this.purchaseType === 'Catalog'){
+                expectedDelivery = await this.page.locator(LPrCreate.EXPECTED_DELIVERY_CATALOG);
+            } else {
+                expectedDelivery = await this.page.locator(LPrCreate.EXPECTED_DELIVERY_NON_CATALOG);
+            }
             await this.config.waitForLocator(this.page);
-            await expectedDeliveryField.click();
+            await expectedDelivery.click();
 
             let todayOption = await this.page.locator(LPrCreate.TODAY);
             await this.config.waitForLocator(this.page);
@@ -341,9 +368,9 @@ class Create {
 
     async oiAndTpCurrency(){
         try {
-            if (this.purchaseType.equals("NonCatalog")) {
+            if (this.purchaseType === "NonCatalog") {
 
-                let oiAndTpCurrencyLocator =await this.page.locator(LPrCreate.OI_AND_TP_CURRENCY);
+                let oiAndTpCurrencyLocator = await this.page.locator(LPrCreate.OI_AND_TP_CURRENCY);
                 await this.config.waitForLocator(this.page);
                 await oiAndTpCurrencyLocator.click();
 
@@ -366,8 +393,17 @@ class Create {
     async orderIntake(){
         try {
             let orderIntake = TestData.billingAndPricingDetails.orderIntake;
+            let purchaseType = this.purchaseType;
+
+            let orderIntakeLocator = '';
+
+            if(purchaseType === 'Catalog'){
+                orderIntakeLocator = await this.page.locator(LPrCreate.CATALOG_ORDER_INTAKE);
+            } else {
+                orderIntakeLocator = await this.page.locator(LPrCreate.NON_CATALOG_ORDER_INTAKE);
+            }
             await this.config.waitForLocator(this.page);
-            await orderIntakeLocator.fill(orderIntake);
+            await orderIntakeLocator.fill(orderIntake.toString());
         } catch (error) {
             console.log("Error encountered: " + error);
         }
@@ -432,14 +468,19 @@ class Create {
 
     async inspectionRequired() {
         try {
-            let isInspectionRequired = Boolean.parseBoolean(TestData.miscellaneousItemDetails.inspectionRequired);
-
-            if (isInspectionRequired) {
-                let inspectionRequiredLocator = await this.page.locator(LPrCreate.INSPECTION_REQUIRED);
+            let isInspectionRequired = TestData.miscellaneousItemDetails.inspectionRequired;
+            let purchaseType = this.purchaseType;
+            let inspectionRequiredLocator = '';
+            if (isInspectionRequired === 'true'){
+                if (purchaseType === 'Catalog') {
+                    inspectionRequiredLocator = await this.page.locator(LPrCreate.CATALOG_INSPECTION_REQUIRED);
+                } else if(purchaseType === 'NonCatalog') {
+                    inspectionRequiredLocator = await this.page.locator(LPrCreate.CATALOG_INSPECTION_REQUIRED);
+                }
+            }
                 await this.config.waitForLocator(this.page);
                 await inspectionRequiredLocator.click();
-            }
-        } catch (error) {
+            } catch (error) {
             console.log("Error encountered: " + error);
         }
     }
@@ -464,48 +505,53 @@ class Create {
 
     async addLineRequisitionItems() {
         try {
-            let addItemButton = null;
-            let addLineItemButton = await this.page.locator(LPrCreate.ADD_LINE_ITEM_BUTTON);
-            await this.config.waitForLocator(this.page);
+            const addLineItemButton = await this.page.locator(LPrCreate.ADD_LINE_ITEM_BUTTON);
             await addLineItemButton.click();
+            
+            // const nonCatalogItemsDropdown = await this.page.locator(LPrCreate.NON_CATALOG_ITEMS_CONTAINER);
+            
+            if (this.purchaseType === "Catalog") {
 
-            let itemsDropdown = await this.page.locator(LPrCreate.ITEMS);
-            await this.config.waitForLocator(this.page);
-            await itemsDropdown.click();
+                const catalogItemsDropdown = await this.page.locator(LPrCreate.CATALOG_ITEMS_CONTAINER);
 
-            if (this.purchaseType.toLowerCase().equals("catalog")) {
-                let itemList = await this.page.$$(LPrCreate.ITEMS_LIST).allTextContents();
-                for (let i = 1; i < itemList.length; i++) {
-                    let itemName = itemList[i].split(' - ');
+                const [response] = await Promise.all([
+                    this.page.waitForResponse((response) => 
+                    response.url().includes('/api/RateContractItems')),
+                    catalogItemsDropdown.click()
+                ]);
 
-                    if (itemList.length > 1) {
-                        await this.config.waitForLocator(this.page);
-                        await addLineItemButton.click();
-                        await this.config.waitForLocator(this.page);
-                        await itemsDropdown.click();
-                    }
-
+                const responseBody = await response.json();
+                const items = await responseBody.map(item => item.text);
+                
+                for (let i = 0; i < items.length; i++) {
                     let itemSearchBox = await this.page.locator(LPrCreate.ITEM_SEARCH);
                     await this.config.waitForLocator(this.page);
-                    await itemSearchBox.fill(itemName);
+                    await itemSearchBox.fill(items[i]);
 
-                    let itemOption = await this.page.locator(LPrCreate.getItem(itemName));
+                    let itemOption = await this.page.locator(LPrCreate.getItem(items[i]));
                     this.config.waitForLocator(this.page);
-                    await itemOption.first().click();
+                    await itemOption.click();
 
                     let quantityField = await this.page.locator(LPrCreate.QUANTITY);
                     await this.config.waitForLocator(this.page);
-                    await quantityField.fill(String.valueOf(i));
+                    await quantityField.fill("10");
 
-                    addItemButton = await this.page.locator(LPrCreate.ADD_ITEM_BUTTON);
+                    let addItemButton = await this.page.locator(LPrCreate.ADD_ITEM_BUTTON);
                     await this.config.waitForLocator(this.page);
                     await addItemButton.click();
+
+                    if(i === items.length - 1){
+                        break;
+                    } else {
+                        await addLineItemButton.click();
+                        await catalogItemsDropdown.click();
+                    }
                 }
-            } else if (this.purchaseType.toLowerCase().equals("noncatalog")) {
+            } else if (this.purchaseType === "NonCatalog") {
                 let itemNames = TestData.orderDetails.items.split(',');
                 let quantities = TestData.orderDetails.quantityList.split(",");
 
-                for (let i = 1; i < itemNames.length; i++) {
+                for (let i = 0; i < itemNames.length(); i++) {
                     await this.config.waitForLocator(this.page);
                     await addLineItemButton.click();
 
@@ -525,7 +571,6 @@ class Create {
                     await quantityField.fill(quantities[i]);
 
                     await this.config.waitForLocator(this.page);
-                    await addItemButton.click();
                 }
             }
         } catch (error) {
@@ -534,11 +579,11 @@ class Create {
     }
 
     async notes() {
-        try {
+        try { 
             let notes = TestData.documentsAndNotes.requisitionNotes;
             let notesField = await this.page.locator(LPrCreate.NOTES);
             await this.config.waitForLocator(this.page);
-            await notesField.fill(notesText);
+            await notesField.fill(notes);
         } catch (error) {
             console.log("Error encountered: " + error);
         }
@@ -546,37 +591,35 @@ class Create {
 
     async attachments(){
         try {
+            const path = require('path');
+            let fileType = TestData.browserAndExecutionSettings.fileType;
             let internalFile = TestData.browserAndExecutionSettings.internalFilePath;
             let externalFile = TestData.browserAndExecutionSettings.externalFilePath;
-//TODO Internal Attachment
+
             let attachmentsButton = await this.page.locator(LPrCreate.ATTACHMENTS);
             await this.config.waitForLocator(this.page);
             await attachmentsButton.click();
 
-            let internalFileUpload = await this.page.locator(LPrCreate.FILE_UPLOAD);
+            let fileUploadLocator = await this.page.locator(LPrCreate.FILE_UPLOAD);
             await this.config.waitForLocator(this.page);
-            await internalFileUpload.setInputFiles(Paths.get(internalFile));
 
-            let attachInternalFileButton = await this.page.locator(LPrCreate.ATTACH_FILE_BUTTON);
-            await this.config.waitForLocator(this.page);
-            attachInternalFileButton.click();
 
-//TODO External Attachment
-            let externalAttachmentsButton = await this.page.locator(LPrCreate.ATTACHMENTS);
-            await this.config.waitForLocator(this.page);
-            await externalAttachmentsButton.click();
+            if(fileType === 'Internal'){
+                await fileUploadLocator.setInputFiles(path.resolve(internalFile));
+            } else if(fileType === 'External'){
+                await fileUploadLocator.setInputFiles(path.resolve(externalFile));
 
-            let externalFileUpload = await this.page.locator(LPrCreate.FILE_UPLOAD);
-            await this.config.waitForLocator(this.page);
-            await externalFileUpload.setInputFiles(Paths.get(externalFile));
+                let externalRadioButton = await this.page.locator(LPrCreate.EXTERNAL_RADIO_BUTTON);
+                await this.config.waitForLocator(this.page);
+                await externalRadioButton.click();
+            } else {
+                console.log("Enter Proper file type or unable to fetch the file")
+            }
 
-            let externalRadioButton = await this.page.locator(LPrCreate.EXTERNAL_RADIO_BUTTON);
+            let attachFileButton = await this.page.locator(LPrCreate.ATTACH_FILE_BUTTON);
+            await attachFileButton.waitFor({state : 'attached'});
             await this.config.waitForLocator(this.page);
-            await externalRadioButton.click();
-
-            let attachExternalFileButton = await this.page.locator(LPrCreate.ATTACH_FILE_BUTTON);
-            await this.config.waitForLocator(this.page);
-            await attachExternalFileButton.click();
+            await attachFileButton.click();
 
             let continueButton = await this.page.locator(LPrCreate.CONTINUE_BUTTON);
             await this.config.waitForLocator(this.page);
@@ -593,20 +636,18 @@ class Create {
             await createDraftButtonLocator.click();
 
             let yesButtonLocator = await this.page.locator(LPrCreate.YES);
-            await this.config.waitForLocator(this.page);
 
-            const [response] = Promise.all([
-                await this.page.waitForResponse((response) =>
-                response.url().includes('/api/requisitions') && response.status()),
-                await yesButtonLocator.click()
+            const [response] = await Promise.all([
+                this.page.waitForResponse((response) =>
+                response.url().includes('/api/requisitions')),
+                yesButtonLocator.click()
             ]);
 
             const status = await response.status();
-            const body = await response.body();
 
-            await iLogout.performLogout();
+            await this.logout.performLogout();
 
-            return {status, body};
+            return status;
         } catch (error) {
             console.log("Error encountered: " + error);
         }
